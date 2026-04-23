@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .nav { display: flex; gap: 15px; }
+        .nav a { padding: 10px 20px; background-color: #ddd; text-decoration: none; border-radius: 3px; }
+        .nav a.active { background-color: #4CAF50; color: white; }
+        .container { background-color: white; padding: 20px; border-radius: 5px; }
+        .section { margin-bottom: 30px; border: 1px solid #ddd; padding: 15px; border-radius: 5px; }
+        h2 { color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; }
+        h3 { color: #555; margin-top: 0; }
+        form { background-color: #f9f9f9; padding: 15px; border-radius: 3px; margin-bottom: 15px; }
+        input, select { padding: 8px; border: 1px solid #ddd; border-radius: 3px; margin: 5px 5px 5px 0; }
+        button { padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer; margin: 5px 5px 5px 0; }
+        button:hover { background-color: #45a049; }
+        button.danger { background-color: #d32f2f; }
+        button.danger:hover { background-color: #b71c1c; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #4CAF50; color: white; }
+        tr:hover { background-color: #f5f5f5; }
+        .messages { margin-bottom: 20px; }
+        .message { padding: 10px; margin-bottom: 10px; border-radius: 3px; }
+        .message.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>IoT Beállítások</h1>
+        <div class="nav">
+            <a href="/">Dashboard</a>
+            <a href="/settings/" class="active">Beállítások</a>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message success">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="container">
+        <div class="section">
+            <h2>Küszöbértékek kezelése</h2>
+            
+            <form method="post">
+                {% csrf_token %}
+                <h3>Új küszöbérték</h3>
+                <select name="device_id" required>
+                    <option value="">-- Eszköz kiválasztása --</option>
+                    {% for device in devices %}
+                    <option value="{{ device }}">{{ device }}</option>
+                    {% endfor %}
+                </select>
+                <select name="sensor" required>
+                    <option value="">-- Szenzor kiválasztása --</option>
+                    {% for key, label in sensor_choices %}
+                    <option value="{{ key }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="threshold_value" placeholder="Küszöbérték" step="0.1" required>
+                <input type="hidden" name="action" value="set_threshold">
+                <button type="submit">Küszöbérték beállítása</button>
+            </form>
+
+            <h3>Meglévő küszöbértékek</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Eszköz</th>
+                        <th>Szenzor</th>
+                        <th>Küszöbérték</th>
+                        <th>Státusz</th>
+                        <th>Műveletek</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for threshold in thresholds %}
+                    <tr>
+                        <td>{{ threshold.device_id }}</td>
+                        <td>
+                            {% for key, label in sensor_choices %}
+                                {% if key == threshold.sensor %}{{ label }}{% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{ threshold.threshold_value }}</td>
+                        <td>{% if threshold.enabled %}Aktív{% else %}Inaktív{% endif %}</td>
+                        <td>
+                            <form method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="device_id" value="{{ threshold.device_id }}">
+                                <input type="hidden" name="sensor" value="{{ threshold.sensor }}">
+                                <input type="hidden" name="action" value="delete_threshold">
+                                <button type="submit" class="danger" onclick="return confirm('Biztosan törlöd?')">Törlés</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">Nincsenek beállított küszöbértékek</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Email értesítések kezelése</h2>
+            
+            <form method="post">
+                {% csrf_token %}
+                <h3>Új email cím hozzáadása</h3>
+                <select name="device_id" required>
+                    <option value="">-- Eszköz kiválasztása --</option>
+                    {% for device in devices %}
+                    <option value="{{ device }}">{{ device }}</option>
+                    {% endfor %}
+                </select>
+                <select name="sensor" required>
+                    <option value="">-- Szenzor kiválasztása --</option>
+                    {% for key, label in sensor_choices %}
+                    <option value="{{ key }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <input type="email" name="email" placeholder="email@example.com" required>
+                <input type="hidden" name="action" value="add_recipient">
+                <button type="submit">Email hozzáadása</button>
+            </form>
+
+            <h3>Email értesítések</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Eszköz</th>
+                        <th>Szenzor</th>
+                        <th>Email cím</th>
+                        <th>Műveletek</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for recipient in recipients %}
+                    <tr>
+                        <td>{{ recipient.device_id }}</td>
+                        <td>
+                            {% for key, label in sensor_choices %}
+                                {% if key == recipient.sensor %}{{ label }}{% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{ recipient.email }}</td>
+                        <td>
+                            <form method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="device_id" value="{{ recipient.device_id }}">
+                                <input type="hidden" name="sensor" value="{{ recipient.sensor }}">
+                                <input type="hidden" name="email" value="{{ recipient.email }}">
+                                <input type="hidden" name="action" value="delete_recipient">
+                                <button type="submit" class="danger" onclick="return confirm('Biztosan törlöd?')">Törlés</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">Nincsenek email értesítések beállítva</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
