@@ -48,3 +48,18 @@ class AlertStatus(models.Model):
 
     class Meta:
         unique_together = [('device_id', 'sensor')]
+
+
+class SensorNameSet(models.Model):
+    """Store human-friendly names for the six sensors of a device."""
+    device_id = models.CharField(max_length=50, unique=True)
+    t1_name = models.CharField(max_length=100, blank=True, default='T1')
+    h1_name = models.CharField(max_length=100, blank=True, default='H1')
+    t2_name = models.CharField(max_length=100, blank=True, default='T2')
+    h2_name = models.CharField(max_length=100, blank=True, default='H2')
+    t3_name = models.CharField(max_length=100, blank=True, default='T3')
+    h3_name = models.CharField(max_length=100, blank=True, default='H3')
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"SensorNameSet({self.device_id})"
