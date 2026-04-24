@@ -60,15 +60,19 @@
             h2:{% if d.h2 is None %}null{% else %}{{ d.h2 }}{% endif %},
             h3:{% if d.h3 is None %}null{% else %}{{ d.h3 }}{% endif %}
         },{% endfor %}].reverse();
+        // build datasets dynamically; only include T3 if any t3 value exists
+        const datasets = [];
+        datasets.push({ label: '{{ sensor_names.t1|escapejs }} (°C)', data: raw.map(x => x.t1), borderColor: '#FF6384', tension: 0.1 });
+        datasets.push({ label: '{{ sensor_names.t2|escapejs }} (°C)', data: raw.map(x => x.t2), borderColor: '#36A2EB', tension: 0.1 });
+        if (raw.some(x => x.t3 !== null && x.t3 !== undefined)) {
+            datasets.push({ label: '{{ sensor_names.t3|escapejs }} (°C)', data: raw.map(x => x.t3), borderColor: '#FFCE56', tension: 0.1 });
+        }
+
         new Chart(document.getElementById('SensorChart'), {
             type: 'line',
             data: {
                 labels: raw.map(x => x.t),
-                datasets: [
-                    { label: '{{ sensor_names.t1|escapejs }} (°C)', data: raw.map(x => x.t1), borderColor: '#FF6384', tension: 0.1 },
-                    { label: '{{ sensor_names.t2|escapejs }} (°C)', data: raw.map(x => x.t2), borderColor: '#36A2EB', tension: 0.1 },
-                    { label: '{{ sensor_names.t3|escapejs }} (°C)', data: raw.map(x => x.t3), borderColor: '#FFCE56', tension: 0.1 }
-                ]
+                datasets: datasets
             },
             options: {
                 responsive: true,
