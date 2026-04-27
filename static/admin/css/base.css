@@ -1,0 +1,5 @@
+/* Minimal admin base CSS to satisfy admin templates during development */
+html, body { margin:0; padding:0; font-family: Arial, Helvetica, sans-serif; background:#fff; color:#111; }
+.module { padding: 10px; margin-bottom: 12px; border: 1px solid #eee; background:#fafafa }
+.grp-module { margin-bottom: 12px }
+.breadcrumbs { padding: 8px 0; color: #666 }

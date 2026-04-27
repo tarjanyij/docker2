@@ -1,6 +1,8 @@
 from urllib import request
 
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout as auth_logout
 from django.contrib import messages
 from django.http import JsonResponse
 from api.models import Reading, Threshold, AlertRecipient, SensorNameSet
@@ -62,6 +64,7 @@ def dashboard(request):
     })
 
 
+@login_required
 def sensor_names(request):
     devices = Reading.objects.values_list('device_id', flat=True).distinct()
     device_id = request.GET.get('device') or (devices[0] if devices else '')
@@ -99,6 +102,7 @@ def sensor_names(request):
         'sns': sns,
     })
 
+@login_required
 def settings(request):
   devices=Reading.objects.values_list('device_id',flat=True).distinct()
 
@@ -152,3 +156,9 @@ def settings(request):
     'recipients':recipients,
     'sensor_choices':Threshold.SENSOR_CHOICES
 })
+
+
+def logout_view(request):
+    """Log out the user and redirect to home. Accepts GET for convenience in this app."""
+    auth_logout(request)
+    return redirect('/')

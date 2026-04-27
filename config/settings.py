@@ -4,7 +4,16 @@ BASE_DIR=Path(__file__).resolve().parent.parent
 SECRET_KEY='dev'
 DEBUG=True
 ALLOWED_HOSTS=['*']
-INSTALLED_APPS=['django.contrib.contenttypes','django.contrib.auth','django.contrib.sessions','django.contrib.messages','django.contrib.staticfiles','api','dashboard']
+INSTALLED_APPS=[
+	'django.contrib.admin',
+	'django.contrib.contenttypes',
+	'django.contrib.auth',
+	'django.contrib.sessions',
+	'django.contrib.messages',
+	'django.contrib.staticfiles',
+	'api',
+	'dashboard',
+]
 MIDDLEWARE=[
 	'django.middleware.security.SecurityMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
@@ -43,3 +52,10 @@ DEFAULT_FROM_EMAIL=os.getenv('DEFAULT_FROM_EMAIL','noreply@iot-dashboard.local')
 #Időzóna beállítása
 TIME_ZONE = 'Europe/Budapest'
 USE_TZ = True   
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+# Static files (CSS, JavaScript, Images)
+# Required for django.contrib.staticfiles and admin
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'

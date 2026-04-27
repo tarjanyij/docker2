@@ -1,0 +1,3 @@
+/* Styles for nav sidebar stub */
+#nav-sidebar { width: 200px; }
+body.collapsed-nav #nav-sidebar { width: 48px; }

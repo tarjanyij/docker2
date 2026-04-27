@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Bejelentkezés</title>
+    <style>body{font-family:Arial;margin:20px}form{background:#fff;padding:20px;border-radius:6px;max-width:400px}</style>
+    </head>
+<body>
+    <h2>Bejelentkezés</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <label>Felhasználónév</label><br>
+            <input type="text" name="username" required autofocus>
+        </div>
+        <div>
+            <label>Jelszó</label><br>
+            <input type="password" name="password" required>
+        </div>
+        <input type="hidden" name="next" value="{{ next }}">
+        <div style="margin-top:10px"><button type="submit">Bejelentkezés</button></div>
+    </form>
+</body>
+</html>
