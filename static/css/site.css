@@ -1,0 +1,38 @@
+/* Minimal site styles referenced by base.html */
+:root{
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#2563eb;
+}
+
+body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.nav { display: flex; gap: 15px; }
+.nav a { padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 3px; }
+.nav a:hover { background-color: #45a049; }
+.controls { background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+.control-group { margin-bottom: 12px; }
+label { display: inline-block; margin-top: 10px; width: 120px; font-weight: bold; }
+select, input { padding: 8px; border: 1px solid #ddd; border-radius: 3px; }
+
+#c { background-color: white; padding: 20px; border-radius: 5px; }
+h2 { color: #333; margin: 0; }
+
+h3 { color: #555; margin-top: 0; }
+form { background-color: #f9f9f9; padding: 15px; border-radius: 3px; margin-bottom: 15px; }
+input, select { padding: 8px; border: 1px solid #ddd; border-radius: 3px; margin: 5px 5px 5px 0; }
+button { padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer; margin: 5px 5px 5px 0; }
+button:hover { background-color: #45a049; }
+button.danger { background-color: #d32f2f; }
+button.danger:hover { background-color: #b71c1c; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+th { background-color: #4CAF50; color: white; }
+tr:hover { background-color: #f5f5f5; }
+.messages { margin-bottom: 20px; }
+.message { padding: 10px; margin-bottom: 10px; border-radius: 3px; }
+.message.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.message.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.container { background:white; padding:20px; border-radius:5px }
+@media(max-width:640px){.controls{flex-direction:column;align-items:stretch}}

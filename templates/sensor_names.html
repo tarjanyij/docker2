@@ -1,28 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Szenzor nevek</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
-        .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px }
-        .nav a { margin-left:10px; padding:8px 12px; background:#ddd; border-radius:3px; text-decoration:none }
-        .container { background:white; padding:20px; border-radius:5px }
-        label { display:block; margin-top:10px }
-        input, select { padding:8px; width:100%; max-width:400px }
-        button { margin-top:12px; padding:8px 16px; background:#4CAF50; color:white; border:none; border-radius:3px }
-    </style>
-    </head>
-<body>
-    <div class="header">
-        <h2>Szenzor nevek szerkesztése</h2>
-        <div class="nav">
-            <a href="/">Dashboard</a>
-            <a href="/settings/">Beállítások</a>
-            <a href="{% url 'logout' %}">Kijelentkezés</a>
-        </div>
-    </div>
-    <div class="container">
+{% extends "base.html" %}
+{% block title %}Szenzor nevek{% endblock %}
+{% block content %}
+  <div class="container">
         <form method="get">
             <label>Eszköz kiválasztása</label>
             <select name="device" onchange="this.form.submit()">
@@ -36,26 +15,25 @@
             {% csrf_token %}
             <input type="hidden" name="device_id" value="{{ device_id }}">
 
-            <label>T1 név</label>
+            <label style="display: block; ">T1 név</label>
             <input type="text" name="t1_name" value="{% if sns %}{{ sns.t1_name }}{% else %}T1{% endif %}">
 
-            <label>H1 név</label>
+            <label style="display: block; ">H1 név</label>
             <input type="text" name="h1_name" value="{% if sns %}{{ sns.h1_name }}{% else %}H1{% endif %}">
 
-            <label>T2 név</label>
+            <label style="display: block; ">T2 név</label>
             <input type="text" name="t2_name" value="{% if sns %}{{ sns.t2_name }}{% else %}T2{% endif %}">
 
-            <label>H2 név</label>
+            <label style="display: block; ">H2 név</label>
             <input type="text" name="h2_name" value="{% if sns %}{{ sns.h2_name }}{% else %}H2{% endif %}">
 
-            <label>T3 név</label>
+            <label style="display: block; ">T3 név</label>
             <input type="text" name="t3_name" value="{% if sns %}{{ sns.t3_name }}{% else %}T3{% endif %}">
 
-            <label>H3 név</label>
+            <label style="display: block; ">H3 név</label>
             <input type="text" name="h3_name" value="{% if sns %}{{ sns.h3_name }}{% else %}H3{% endif %}">
 
             <button type="submit">Mentés</button>
         </form>
     </div>
-</body>
-</html>
+{% endblock %}
