@@ -15,22 +15,22 @@
             {% csrf_token %}
             <input type="hidden" name="device_id" value="{{ device_id }}">
 
-            <label style="display: block; ">T1 név</label>
+            <label style="display: block; margin-top: 10px;">T1 név</label>
             <input type="text" name="t1_name" value="{% if sns %}{{ sns.t1_name }}{% else %}T1{% endif %}">
 
-            <label style="display: block; ">H1 név</label>
+            <label style="display: block; margin-top: 10px;">H1 név</label>
             <input type="text" name="h1_name" value="{% if sns %}{{ sns.h1_name }}{% else %}H1{% endif %}">
 
-            <label style="display: block; ">T2 név</label>
+            <label style="display: block; margin-top: 10px;">T2 név</label>
             <input type="text" name="t2_name" value="{% if sns %}{{ sns.t2_name }}{% else %}T2{% endif %}">
 
-            <label style="display: block; ">H2 név</label>
+            <label style="display: block; margin-top: 10px;">H2 név</label>
             <input type="text" name="h2_name" value="{% if sns %}{{ sns.h2_name }}{% else %}H2{% endif %}">
 
-            <label style="display: block; ">T3 név</label>
+            <label style="display: block; margin-top: 10px;">T3 név</label>
             <input type="text" name="t3_name" value="{% if sns %}{{ sns.t3_name }}{% else %}T3{% endif %}">
 
-            <label style="display: block; ">H3 név</label>
+            <label style="display: block; margin-top: 10px;">H3 név</label>
             <input type="text" name="h3_name" value="{% if sns %}{{ sns.h3_name }}{% else %}H3{% endif %}">
 
             <button type="submit">Mentés</button>
