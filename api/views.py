@@ -94,7 +94,7 @@ def check_thresholds(device_id, sensors_data):
                         recipients
                     )
 
-                    print(f"Riasztási email elküldve: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+                    print(f"{threshold.sensor} riasztási email elküldve: {now.strftime('%Y-%m-%d %H:%M:%S')}")
 
                     # AlertStatus frissítése
                     alert_status.is_alerted = True
@@ -110,7 +110,7 @@ def check_thresholds(device_id, sensors_data):
                 alert_status.last_reset_time = now
                 alert_status.save()
 
-                print(f"Riasztás resetelve: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+                print(f"{threshold.sensor} riasztás resetelve: {now.strftime('%Y-%m-%d %H:%M:%S')}")
 
 def send_alert_email(device_id, sensor, sensor_value, threshold_value, recipients):
     now = timezone.localtime(timezone.now())
@@ -144,7 +144,7 @@ def send_alert_email(device_id, sensor, sensor_value, threshold_value, recipient
     Idő: {now.strftime('%Y-%m-%d %H:%M:%S')}
     '''
         
-    print(f"Email küldés időpontja: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"{sensor_label} email küldés időpontja: {now.strftime('%Y-%m-%d %H:%M:%S')}")
     try:
         send_mail(
             subject,
