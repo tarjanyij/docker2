@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.utils import timezone
-from .models import Reading, Threshold, AlertRecipient, AlertStatus
+from .models import Reading, Threshold, AlertRecipient, AlertStatus, SensorNameSet
 
 @csrf_exempt
 def ingest(request):
@@ -56,49 +56,95 @@ def check_thresholds(device_id, sensors_data):
             sensor=threshold.sensor
         )
 
+        # print("Threshold sensor:", threshold.sensor)
+        # print("Sensor value:", sensor_value)
+        # print("Threshold value:", threshold.threshold_value)
+
         # Küszöbérték túllépése?
         if sensor_value > threshold.threshold_value:
+
+            should_send = False
+            now = timezone.localtime(timezone.now())
+
+            # Első riasztás
             if not alert_status.is_alerted:
-                # Riasztás küldése
-                recipients = AlertRecipient.objects.filter(
+                should_send = True
+
+            # Ismétlődő riasztás óránként
+            elif alert_status.last_alert_time:
+                elapsed = now - alert_status.last_alert_time
+
+                if elapsed.total_seconds() >= 3600:
+                    should_send = True
+
+            if should_send:
+
+                recipients = list(AlertRecipient.objects.filter(
                     device_id=device_id,
                     sensor=threshold.sensor
-                ).values_list('email', flat=True)
-                if recipients:
-                    send_alert_email(device_id, threshold.sensor, sensor_value, threshold.threshold_value, recipients)
+                ).values_list('email', flat=True))
 
-                # AlertStatus frissítése
-                alert_status.is_alerted = True
-                alert_status.last_alert_time = timezone.now()
-                alert_status.save()
+                if len(recipients) > 0:
+
+                    send_alert_email(
+                        device_id,
+                        threshold.sensor,
+                        sensor_value,
+                        threshold.threshold_value,
+                        recipients
+                    )
+
+                    print(f"Riasztási email elküldve: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+
+                    # AlertStatus frissítése
+                    alert_status.is_alerted = True
+                    alert_status.last_alert_time = now
+                    alert_status.save()
+
+        # Érték már normális
         else:
-            # Érték már normális
+
             if alert_status.is_alerted:
+
                 alert_status.is_alerted = False
-                alert_status.last_reset_time = timezone.now()
+                alert_status.last_reset_time = now
                 alert_status.save()
+
+                print(f"Riasztás resetelve: {now.strftime('%Y-%m-%d %H:%M:%S')}")
 
 def send_alert_email(device_id, sensor, sensor_value, threshold_value, recipients):
-    sensor_labels = {
-        't1': 'Hőmérséklet 1',
-        'h1': 'Páratartalom 1',
-        't2': 'Hőmérséklet 2',
-        'h2': 'Páratartalom 2',
-        't3': 'Hőmérséklet 3',
-        'h3': 'Páratartalom 3'
+    now = timezone.localtime(timezone.now())
+    # load sensor name set for this device (fallbacks will be used in template)
+    sns = SensorNameSet.objects.filter(device_id=device_id).first()
+    sensor_names = {
+        't1': sns.t1_name if sns and sns.t1_name else 'Hőmérséklet 1',
+        't2': sns.t2_name if sns and sns.t2_name else 'Hőmérséklet 2',
+        't3': sns.t3_name if sns and sns.t3_name else 'Hőmérséklet 3',
+        'h1': sns.h1_name if sns and sns.h1_name else 'Páratartalom 1',
+        'h2': sns.h2_name if sns and sns.h2_name else 'Páratartalom 2',
+        'h3': sns.h3_name if sns and sns.h3_name else 'Páratartalom 3',
     }
-    sensor_label = sensor_labels.get(sensor, sensor)
+    # sensor_labels = {
+    #     't1': 'Hőmérséklet 1',
+    #     'h1': 'Páratartalom 1',
+    #     't2': 'Hőmérséklet 2',
+    #     'h2': 'Páratartalom 2',
+    #     't3': 'Hőmérséklet 3',
+    #     'h3': 'Páratartalom 3'
+    # }
+    sensor_label = sensor_names.get(sensor, sensor)
 
     subject = f'IoT Riasztás: {device_id} - {sensor_label}'
     message = f'''
-Eszköz: {device_id}
-Szenzor: {sensor_label}
-Aktuális érték: {sensor_value:.2f}
-Küszöbérték: {threshold_value:.2f}
+    Eszköz: {device_id}
+    Szenzor: {sensor_label}
+    Aktuális érték: {sensor_value:.2f}
+    Küszöbérték: {threshold_value:.2f}
 
-Idő: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}
+    Idő: {now.strftime('%Y-%m-%d %H:%M:%S')}
     '''
-
+        
+    print(f"Email küldés időpontja: {now.strftime('%Y-%m-%d %H:%M:%S')}")
     try:
         send_mail(
             subject,
@@ -108,4 +154,6 @@ Idő: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}
             fail_silently=False
         )
     except Exception as e:
-        print(f'Email küldési hiba: {e}')
+        print(f'Email küldési hiba: {e} időpontja: {now.strftime("%Y-%m-%d %H:%M:%S")}')
+        import traceback
+        traceback.print_exc()

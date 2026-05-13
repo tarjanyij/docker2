@@ -1,0 +1,34 @@
+services:
+  iot-db:
+    image: postgres:15
+    networks:
+      n8n_vlan:
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iot"]
+      interval: 5s
+      retries: 5
+    volumes:
+      - iot-db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  iot-web:
+    build: .
+    networks:
+      n8n_vlan:
+    ports:
+      - "8200:8200"
+    env_file:
+      - .env
+    depends_on:
+      iot-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  n8n_vlan:
+    external: true
+
+volumes:
+  iot-db_data:
