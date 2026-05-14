@@ -24,6 +24,7 @@
                 <input type='datetime-local' name='end_time' value='{{ end_time|slice:":16" }}'>
             </div>
             <button type='submit'>Szűrés</button>
+            <button type='button' onclick='resetFilters()'>Alaphelyzet</button>
         </form>
     </div>
 
@@ -63,9 +64,18 @@
                 scales: { y: { beginAtZero: true, grace:'10%', title: { display: true, text: 'Hőmérséklet (°C)' } }, x: { title: { display: true, text: 'Idő' } } }
             }
         });
-
+        <!--Ha van filter kitöltve akkor azt adja vissza ha nincs akkor percenként frissít-->
         function hasFilter() { const params = new URLSearchParams(window.location.search); return params.has("start_time") || params.has("end_time"); }
         if (!hasFilter()) setInterval(() => { location.reload(); }, 60000);
+        
+        <!-- Reset Filters -->
+        function resetFilters() { 
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            const device = urlParams.get("device");
+            const newUrl = `?device=${encodeURIComponent(device)}`;
+            window.location.href = newUrl;
+        }
     </script>
     {% endblock %}
 {% endblock %}

@@ -7,7 +7,10 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG") == "True"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1"
+).split(",")
 INSTALLED_APPS=[
 	'django.contrib.admin',
 	'django.contrib.contenttypes',
@@ -20,6 +23,7 @@ INSTALLED_APPS=[
 ]
 MIDDLEWARE=[
 	'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
@@ -68,11 +72,22 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
 #Időzóna beállítása
 TIME_ZONE = os.getenv("TZ", "Europe/Budapest")
-USE_TZ = True   
+USE_TZ = True
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 # Static files (CSS, JavaScript, Images)
 # Required for django.contrib.staticfiles and admin
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static'
+
+# IDE rakod a saját css/js fájlokat
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+# IDE gyűjti össze collectstatic
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE = (
+    'whitenoise.storage.CompressedManifestStaticFilesStorage'
+)
