@@ -4,9 +4,39 @@
 {% block title %}Dashboard - {{ device }}{% endblock %}
 
 {% block content %}
+    <style>
+        .filter-form {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 10px;
+        }
+
+        .control-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .control-group input,
+        .control-group select {
+            padding: 6px 10px;
+        }
+    </style>
     <h2>Eszköz: {{ device }}</h2>
     <div class='controls'>
-        <form method='get'>
+        <form method='get' class="filter-form">
             <div class='control-group'>
                 <label>Eszköz:</label>
                 <select name='device'>
@@ -23,8 +53,10 @@
                 <label>Vége:</label>
                 <input type='datetime-local' name='end_time' value='{{ end_time|slice:":16" }}'>
             </div>
-            <button type='submit'>Szűrés</button>
-            <button type='button' onclick='resetFilters()'>Alaphelyzet</button>
+            <div class='button-group'>
+                <button type='submit'>Szűrés</button>
+                <button type='button' onclick='resetFilters()'>Alaphelyzet</button>
+            </div>
         </form>
     </div>
 
