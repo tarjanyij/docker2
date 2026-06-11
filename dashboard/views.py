@@ -110,6 +110,7 @@ def settings(request):
     action = request.POST.get('action')
     device_id = request.POST.get('device_id')
     sensor = request.POST.get('sensor')
+    ntfy = request.POST.get('ntfy')
 
     if action == 'set_threshold':
         threshold_value = float(request.POST.get('threshold_value'))
@@ -122,19 +123,23 @@ def settings(request):
 
     elif action == 'add_recipient':
         email = request.POST.get('email')
+        ntfy = request.POST.get('ntfy')
         AlertRecipient.objects.get_or_create(
             device_id=device_id,
             sensor=sensor,
-            email=email
+            email=email,
+            ntfy=ntfy
         )
         messages.success(request, f'Email cím felvéve: {email}')
 
     elif action == 'delete_recipient':
         email = request.POST.get('email')
+        ntfy = request.POST.get('ntfy')
         AlertRecipient.objects.filter(
             device_id=device_id,
             sensor=sensor,
-            email=email
+            email=email,
+            ntfy=ntfy
         ).delete()
         messages.success(request, f'Email cím törölve: {email}')
 

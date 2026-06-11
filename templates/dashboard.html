@@ -61,7 +61,10 @@
     </div>
 
     <div style="width:100%;height:600px;">
-        <canvas id='SensorChart'></canvas>
+        <canvas id='SensorChartTemperature'></canvas>
+    </div>
+    <div style="width:100%;height:600px;">
+        <canvas id='SensorChartHumidity'></canvas>
     </div>
 
     <script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
@@ -76,24 +79,43 @@
             h3:{% if d.h3 is None %}null{% else %}{{ d.h3 }}{% endif %}
         },{% endfor %}].reverse();
 
-        const datasets = [];
-        datasets.push({ label: '{{ sensor_names.t1|escapejs }} (°C)', data: raw.map(x => x.t1), borderColor: '#FF6384', tension: 0.1 });
-        datasets.push({ label: '{{ sensor_names.t2|escapejs }} (°C)', data: raw.map(x => x.t2), borderColor: '#36A2EB', tension: 0.1 });
+        const datasetsTemperature = [];
+        datasetsTemperature.push({ label: '{{ sensor_names.t1|escapejs }} (°C)', data: raw.map(x => x.t1), borderColor: '#FF6384', tension: 0.1 });
+        datasetsTemperature.push({ label: '{{ sensor_names.t2|escapejs }} (°C)', data: raw.map(x => x.t2), borderColor: '#36A2EB', tension: 0.1 });
         if (raw.some(x => x.t3 !== null && x.t3 !== undefined)) {
-            datasets.push({ label: '{{ sensor_names.t3|escapejs }} (°C)', data: raw.map(x => x.t3), borderColor: '#FFCE56', tension: 0.1 });
+            datasetsTemperature.push({ label: '{{ sensor_names.t3|escapejs }} (°C)', data: raw.map(x => x.t3), borderColor: '#FFCE56', tension: 0.1 });
+        }
+        const datasetsHumidity = [];
+        datasetsHumidity.push({ label: '{{ sensor_names.h1|escapejs }} (%)', data: raw.map(x => x.h1), borderColor: '#c8ff63', tension: 0.1 });
+        datasetsHumidity.push({ label: '{{ sensor_names.h2|escapejs }} (%)', data: raw.map(x => x.h2), borderColor: '#eb36dc', tension: 0.1 });
+        if (raw.some(x => x.h3 !== null && x.h3 !== undefined)) {
+            datasetsHumidity.push({ label: '{{ sensor_names.h3|escapejs }} (%)', data: raw.map(x => x.h3), borderColor: '#f16423', tension: 0.1 });
         }
 
-        new Chart(document.getElementById('SensorChart'), {
+        new Chart(document.getElementById('SensorChartTemperature'), {
             type: 'line',
             data: {
                 labels: raw.map(x => x.t),
-                datasets: datasets
+                datasets: datasetsTemperature
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { position: 'top' } },
                 scales: { y: { beginAtZero: true, grace:'10%', title: { display: true, text: 'Hőmérséklet (°C)' } }, x: { title: { display: true, text: 'Idő' } } }
+            }
+        });
+        new Chart(document.getElementById('SensorChartHumidity'), {
+            type: 'line',
+            data: {
+                labels: raw.map(x => x.t),
+                datasets: datasetsHumidity
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } },
+                scales: { y: { beginAtZero: true, grace:'10%', title: { display: true, text: 'Páratartalom (%)' } }, x: { title: { display: true, text: 'Idő' } } }
             }
         });
         <!--Ha van filter kitöltve akkor azt adja vissza ha nincs akkor percenként frissít-->

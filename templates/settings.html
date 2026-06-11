@@ -85,6 +85,7 @@
                     {% endfor %}
                 </select>
                 <input type="email" name="email" placeholder="email@example.com" required>
+                <input type="text" name="ntfy" placeholder="Ntfy topic" required>
                 <input type="hidden" name="action" value="add_recipient">
                 <button type="submit">Email hozzáadása</button>
             </form>
@@ -96,6 +97,7 @@
                         <th>Eszköz</th>
                         <th>Szenzor</th>
                         <th>Email cím</th>
+                        <th>Ntfy topic</th>
                         <th>Műveletek</th>
                     </tr>
                 </thead>
@@ -109,12 +111,14 @@
                             {% endfor %}
                         </td>
                         <td>{{ recipient.email }}</td>
+                        <td>{{ recipient.ntfy }}</td>
                         <td>
                             <form method="post" style="display:inline;">
                                 {% csrf_token %}
                                 <input type="hidden" name="device_id" value="{{ recipient.device_id }}">
                                 <input type="hidden" name="sensor" value="{{ recipient.sensor }}">
                                 <input type="hidden" name="email" value="{{ recipient.email }}">
+                                <input type="hidden" name="ntfy" value="{{ recipient.ntfy }}">
                                 <input type="hidden" name="action" value="delete_recipient">
                                 <button type="submit" class="danger" onclick="return confirm('Biztosan törlöd?')">Törlés</button>
                             </form>
@@ -122,7 +126,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4">Nincsenek email értesítések beállítva</td>
+                        <td colspan="5">Nincsenek email értesítések beállítva</td>
                     </tr>
                     {% endfor %}
                 </tbody>

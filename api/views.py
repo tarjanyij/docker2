@@ -1,4 +1,4 @@
-import json,os
+import json,os,requests
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
@@ -84,6 +84,11 @@ def check_thresholds(device_id, sensors_data):
                     sensor=threshold.sensor
                 ).values_list('email', flat=True))
 
+                ntfy = list(AlertRecipient.objects.filter(
+                    device_id=device_id,
+                    sensor=threshold.sensor 
+                ).values_list('ntfy', flat=True))
+
                 if len(recipients) > 0:
 
                     send_alert_email(
@@ -95,6 +100,17 @@ def check_thresholds(device_id, sensors_data):
                     )
 
                     print(f"{threshold.sensor} riasztási email elküldve: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+                    
+                    if len(ntfy) >0:
+                        send_ntfy_alert(
+                            device_id,
+                            threshold.sensor,
+                            sensor_value,
+                            threshold.threshold_value,
+                            ntfy
+                        )
+
+                    print(f"{threshold.sensor} riasztási ntfy elküldve: {now.strftime('%Y-%m-%d %H:%M:%S')}")
 
                     # AlertStatus frissítése
                     alert_status.is_alerted = True
@@ -157,3 +173,26 @@ def send_alert_email(device_id, sensor, sensor_value, threshold_value, recipient
         print(f'Email küldési hiba: {e} időpontja: {now.strftime("%Y-%m-%d %H:%M:%S")}')
         import traceback
         traceback.print_exc()
+
+def send_ntfy_alert(device_id, sensor, sensor_value, threshold_value, ntfy):
+
+    message = (
+        f"⚠️ {device_id}\n"
+        f"{sensor}: {sensor_value:.1f}\n"
+        f"Küszöb: {threshold_value:.1f}"
+    )
+
+    try:
+        requests.post(
+            ntfy[0],  # ntfy topic",
+            data=message.encode("utf-8"),
+            headers={
+                "Title": "SZERVERSZOBA RIASZTÁS",
+                "Priority": "5",
+                "Tags": "warning,thermometer"
+            },
+            timeout=10
+        )
+
+    except Exception as e:
+        print("NTFY hiba:", e)

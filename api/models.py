@@ -34,6 +34,7 @@ class AlertRecipient(models.Model):
     device_id=models.CharField(max_length=50)
     sensor=models.CharField(max_length=10,choices=Threshold.SENSOR_CHOICES)
     email=models.EmailField()
+    ntfy=models.CharField(max_length=100, blank=True)
     created_at=models.DateTimeField(auto_now_add=True)
 
     class Meta:
